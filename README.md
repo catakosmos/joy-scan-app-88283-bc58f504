@@ -4,16 +4,16 @@ Integrantes:
 - Vicente Vizcarra 202173036-2
 - Josschua Machuca 202030005-4
 
-### Quick start
-Install dependencies
-Install dependences
+### Instrucciones de ejecución
+Instalar las dependencias:
 
 ```
 npm install
 ```
 
-Launch environment
+Correr el proyecto de manera local
 
 ```
 npm run dev
 ```
+Abrir en el navegador la dirección http://localhost:8080 o bien en el cmd usar la opción "o" (de open).
