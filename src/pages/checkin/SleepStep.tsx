@@ -8,11 +8,11 @@ import { ChevronRight, ChevronLeft } from "lucide-react";
 
 // Mapeo de valores del Slider (0-4) a categorías de sueño
 const sleepCategories = [
-    { value: 0, label: "Worst", range: "<3 horas", emoji: "😵" }, // Índice 0
-    { value: 1, label: "Poor", range: "3-4 horas", emoji: "😞" },
-    { value: 2, label: "Fair", range: "5 horas", emoji: "😐" },
-    { value: 3, label: "Good", range: "6-7 horas", emoji: "😊" },
-    { value: 4, label: "Excellent", range: "7-9 horas", emoji: "🤩" }, // Índice 4
+    { value: 0, label: "Pésima", range: "<3 horas", emoji: "😵" }, // Índice 0
+    { value: 1, label: "Mala", range: "3-4 horas", emoji: "😞" },
+    { value: 2, label: "Regular", range: "5 horas", emoji: "😐" },
+    { value: 3, label: "Buena", range: "6-7 horas", emoji: "😊" },
+    { value: 4, label: "Excelente", range: "7-9 horas", emoji: "🤩" }, // Índice 4
 ];
 
 const SleepStep = () => {
@@ -33,10 +33,10 @@ const SleepStep = () => {
   const visualHeight = 400; 
   // 🚨 CRÍTICO 2: Altura del contenedor para que ocupe una gran parte de la vista (550px).
   // 400px de recorrido + 150px para márgenes y espacio
-  const containerHeight = 550; 
+  const containerHeight = 500; 
 
   // 🚨 CRÍTICO 3: Margen superior e inferior. (15% para que 'Excellent' y 'Worst' estén más cerca de los bordes).
-  const verticalMarginPercent = 15; 
+  const verticalMarginPercent = 5; 
   const activeRangePercent = 100 - 2 * verticalMarginPercent; // 70%
 
   // Función para obtener la posición vertical (en %) de un índice
@@ -97,21 +97,14 @@ const SleepStep = () => {
                 {/* 2. Contenedor para el Slider Termómetro (CENTRO) */}
                 <div className="w-8 h-full relative mx-4"> 
                     <Slider
-                        className="slider-vertical-thermometer absolute" 
+                        orientation="vertical"
+                        className="h-full" 
                         defaultValue={[sleepCategories.length-1]} 
                         max={sleepCategories.length - 1} 
                         min={0} 
                         step={1} 
                         onValueChange={(value) => setSleepIndex(value[0])} 
                         
-                        // --- POSICIONAMIENTO FINAL PARA ALTURA Y CENTRADO ---
-                        style={{ 
-                            // Coloca el origen de la rotación exactamente en la posición Worst (85% de altura).
-                            top: `${sliderTopPosition}px`, 
-                            left: '50%',
-                            transform: `rotate(-90deg) translate(-100%, -50%)`,
-                            zIndex: 10, 
-                        }}
                     />
                 </div>
 
