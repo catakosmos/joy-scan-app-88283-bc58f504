@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle, TrendingUp, Calendar, Heart } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Importación de Link
 
 const Home = () => {
   const [showAlert, setShowAlert] = useState(false);
@@ -96,26 +97,31 @@ const Home = () => {
         <div className="space-y-3">
           <h3 className="text-lg font-semibold text-foreground">Acciones Rápidas</h3>
           
+          {/* CORRECCIÓN: El <Link> envuelve la <Card> correctamente */}
           <div className="space-y-3">
-            <Card className="p-4 bg-gradient-to-r from-mood-calm/10 to-mood-calm/5 border-mood-calm/30 hover:shadow-mood transition-all cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <div className="text-2xl">🧘‍♀️</div>
-                <div>
-                  <h4 className="font-medium text-foreground">Ejercicio de Respiración</h4>
-                  <p className="text-sm text-muted-foreground">5 minutos de calma</p>
+            <Link to="/ejercicio/respiracion-4-7-8">
+              <Card className="p-4 bg-gradient-to-r from-mood-calm/10 to-mood-calm/5 border-mood-calm/30 hover:shadow-mood transition-all cursor-pointer">
+                <div className="flex items-center space-x-3">
+                  <div className="text-2xl">🧘‍♀️</div>
+                  <div>
+                    <h4 className="font-medium text-foreground">Ejercicio de Respiración</h4>
+                    <p className="text-sm text-muted-foreground">5 minutos de calma</p>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
             
-            <Card className="p-4 bg-gradient-to-r from-mood-happy/10 to-mood-happy/5 border-mood-happy/30 hover:shadow-mood transition-all cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <div className="text-2xl">📝</div>
-                <div>
-                  <h4 className="font-medium text-foreground">Reflexión Rápida</h4>
-                  <p className="text-sm text-muted-foreground">Expresa tus pensamientos</p>
+            <Link to="/ejercicio/reflexion-rapida">
+              <Card className="p-4 bg-gradient-to-r from-mood-happy/10 to-mood-happy/5 border-mood-happy/30 hover:shadow-mood transition-all cursor-pointer">
+                <div className="flex items-center space-x-3">
+                  <div className="text-2xl">📝</div>
+                  <div>
+                    <h4 className="font-medium text-foreground">Reflexión Rápida</h4>
+                    <p className="text-sm text-muted-foreground">Expresa tus pensamientos</p>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           </div>
         </div>
       </div>
@@ -126,3 +132,4 @@ const Home = () => {
 };
 
 export default Home;
+

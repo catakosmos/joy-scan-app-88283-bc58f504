@@ -13,6 +13,7 @@ import CheckinResults from "./pages/CheckinResults";
 import Reminder from "./pages/Reminder";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import ExerciseDetail from "./pages/ExerciseDetail";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/checkin-results" element={<CheckinResults />} />
           <Route path="/reminder" element={<Reminder />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/ejercicio/:id" element={<ExerciseDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
