@@ -1,7 +1,7 @@
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Clock, Play, Heart, Zap } from "lucide-react";
+import { Clock, Heart, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Exercises = () => {
@@ -10,7 +10,8 @@ const Exercises = () => {
     subtitle: "Técnica de relajación profunda",
     duration: "8 min",
     difficulty: "Fácil",
-    icon: "🌬️"
+    icon: "🌬️",
+    category: "Meditación"
   };
 
   const exercises = [
@@ -120,8 +121,10 @@ const Exercises = () => {
                   </Badge>
                 </div>
                 
-                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-soft">
-                  <Play size={16} className="text-primary-foreground ml-1" />
+                <div className="flex items-center">
+                  <Badge variant="outline" className="text-sm">
+                    {featuredExercise.category}
+                  </Badge>
                 </div>
               </div>
             </div>

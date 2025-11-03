@@ -2,7 +2,7 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Play, Clock, BarChart } from "lucide-react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 // Tipo para la información del ejercicio (puedes moverlo a un archivo .types.ts luego)
@@ -16,8 +16,7 @@ interface Exercise {
   description: string;
 }
 
-// Mock DB de ejercicios. En una app real, esto vendría de una API.
-// Nos basamos en los datos de tu archivo Exercises.tsx
+// Mock DB de ejercicios. Solo los slugs soportados aquí mostrarán detalle.
 const allExercises: Record<string, Exercise> = {
   'respiracion-4-7-8': {
     id: 'respiracion-4-7-8',
@@ -37,36 +36,52 @@ const allExercises: Record<string, Exercise> = {
     icon: "🧘‍♀️",
     description: "Centra tu atención en el presente. Observa tus pensamientos y sensaciones sin juzgarlos. Esta práctica te ayudará a reducir el estrés y aumentar tu autoconciencia."
   },
-  'reflexion-rapida': {
-    id: 'reflexion-rapida',
-    title: "Reflexión Rápida",
-    subtitle: "Expresa tus pensamientos",
+  'gratitud-diaria': {
+    id: 'gratitud-diaria',
+    title: "Gratitud Diaria",
+    subtitle: "3 cosas positivas",
     duration: "5 min",
     difficulty: "Fácil",
-    icon: "📝",
-    description: "Tómate 5 minutos para escribir libremente sobre cómo te sientes. No te preocupes por la gramática o la estructura, solo deja fluir tus pensamientos."
-  },
-  // ... (puedes agregar el resto de ejercicios de Exercises.tsx aquí)
+    icon: "🙏",
+    description: "Piensa en tres cosas por las que estás agradecido hoy y anótalas. Esta práctica ayuda a cambiar el foco hacia lo positivo y mejora el estado de ánimo."
+  }
 };
 
 const ExerciseDetail = () => {
-  const { id } = useParams<{ id: string }>(); // Obtiene el :id de la URL
+  // Aceptamos tanto rutas con :id como :slug para compatibilidad
+  const params = useParams<{ id?: string; slug?: string }>();
+  const key = params.id ?? params.slug ?? ""; // clave buscada en allExercises
   const navigate = useNavigate();
   const [exercise, setExercise] = useState<Exercise | undefined>();
 
   useEffect(() => {
-    if (id && allExercises[id]) {
-      setExercise(allExercises[id]);
+    if (key && allExercises[key]) {
+      setExercise(allExercises[key]);
     } else {
-      // Opcional: navegar a 404 si el ID no existe
-      // navigate('/404'); 
-      // Por ahora, usamos un fallback
-      setExercise(allExercises['respiracion-4-7-8']);
+      // No existe: redirigimos a la página NotFound (la ruta "*" en App.tsx)
+      // Navegar a '/404' hará que el Route "*" renderice el componente NotFound.
+      navigate('/404', { replace: true });
     }
-  }, [id, navigate]);
+  }, [key, navigate]);
 
   if (!exercise) {
-    return <div>Cargando...</div>; // O un componente Skeleton
+    // Si no hay exercise válido mostramos pantalla "No fund"
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-background via-secondary/20 to-muted">
+        <Card className="p-6 max-w-md w-full text-center">
+          <h2 className="text-2xl font-bold">No fund</h2>
+          <p className="text-sm text-muted-foreground mt-2">
+            El ejercicio solicitado no está disponible.
+          </p>
+          <div className="mt-4">
+            <Link to="/ejercicios" className="text-primary underline">
+              Volver a la lista de ejercicios
+            </Link>
+          </div>
+        </Card>
+        <BottomNavigation />
+      </div>
+    );
   }
 
   return (
