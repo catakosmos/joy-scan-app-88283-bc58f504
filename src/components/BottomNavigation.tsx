@@ -1,4 +1,4 @@
-import { Cloud, Calendar, Home, Clock, User } from "lucide-react";
+import { Dumbbell, Calendar, Home, Clock, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ export const BottomNavigation = ({ todayCheckinCompleted = false }: BottomNaviga
 
   const navItems = [
     {
-      icon: Cloud,
+      icon: Dumbbell,
       onClick: () => navigate("/exercises"),
       isActive: location.pathname === "/exercises"
     },

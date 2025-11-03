@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider"; 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, Check } from "lucide-react";
 
 // Mapeo de valores del Slider (0-4) a categorías de sueño
 const sleepCategories = [
@@ -29,13 +29,13 @@ const SleepStep = () => {
     navigate('/checkin/mood');
   };
 
-  // 🚨 CRÍTICO 1: Sincronizado con el width: 400px del index.css.
+  // Sincronizado con el width: 400px del index.css.
   const visualHeight = 400; 
-  // 🚨 CRÍTICO 2: Altura del contenedor para que ocupe una gran parte de la vista (550px).
+  // Altura del contenedor para que ocupe una gran parte de la vista (550px).
   // 400px de recorrido + 150px para márgenes y espacio
   const containerHeight = 500; 
 
-  // 🚨 CRÍTICO 3: Margen superior e inferior. (15% para que 'Excellent' y 'Worst' estén más cerca de los bordes).
+  // Margen superior e inferior. (15% para que 'Excellent' y 'Worst' estén más cerca de los bordes).
   const verticalMarginPercent = 5; 
   const activeRangePercent = 100 - 2 * verticalMarginPercent; // 70%
 
@@ -48,7 +48,7 @@ const SleepStep = () => {
     return (invertedIndex / maxIndex) * activeRangePercent + verticalMarginPercent;
   };
 
-  // 🚨 CRÍTICO 4: Calcular la posición Y exacta del centro del label "Worst" (índice 0)
+  // Calcular la posición Y exacta del centro del label "Worst" (índice 0)
   // El label "Worst" está en el (100% - 15%) = 85% de la altura.
   const topWorstPercent = 100 - verticalMarginPercent; // 85%
   // Posición Y de Worst en píxeles. 85% de 550px = 467.5px
@@ -136,33 +136,30 @@ const SleepStep = () => {
           </div>
         </div>
 
-        {/* Navigation Buttons y Progress Indicator */}
-        <div className="flex space-x-4 pt-8">
-          <Button
-            onClick={handleBack}
-            variant="outline"
-            className="flex-1 h-14 text-lg font-semibold"
-            size="lg"
-          >
-            <ChevronLeft className="mr-2" size={20} />
-            Atrás
-          </Button>
-          
-          <Button
-            onClick={handleContinue}
-            disabled={sleepIndex === undefined}
-            className="flex-1 h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent/90 shadow-soft disabled:opacity-50"
-            size="lg"
-          >
-            Continuar
-            <ChevronRight className="ml-2" size={20} />
-          </Button>
-        </div>
+        {/* Footer de navegación: centrar y limitar ancho igual que JournalStep */}
+        <div className="fixed bottom-6 left-0 right-0">
+          <div className="max-w-md mx-auto px-6">
+            <div className="flex space-x-4">
+              <Button
+                onClick={handleBack}
+                variant="outline"
+                className="flex-1 h-14 text-lg font-semibold"
+                size="lg"
+              >
+                <ChevronLeft className="mr-2" size={20} />
+                Atrás
+              </Button>
 
-        <div className="flex space-x-2 justify-center">
-          <div className="w-8 h-2 bg-primary rounded-full"></div>
-          <div className="w-8 h-2 bg-primary rounded-full"></div>
-          <div className="w-8 h-2 bg-muted rounded-full"></div>
+              <Button
+                onClick={handleContinue}
+                className="flex-1 h-14 text-lg font-semibold bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary-hover shadow-soft"
+                size="lg"
+              >
+                <Check className="mr-2" size={20} />
+                Continuar
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     
