@@ -2,7 +2,7 @@ import { BottomNavigation } from "@/components/BottomNavigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, Clock, Smartphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -11,15 +11,15 @@ const Reminder = () => {
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [selectedTime, setSelectedTime] = useState("09:00");
   const [frequency, setFrequency] = useState("daily");
+  const [customFrequencyDays, setCustomFrequencyDays] = useState(3);
 
-  const timeOptions = [
-    "08:00", "09:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"
-  ];
+  const [showNativeTimeInput, setShowNativeTimeInput] = useState(false);
+
 
   const frequencyOptions = [
     { label: "Diario", value: "daily", icon: "📅" },
-    { label: "Cada 2 días", value: "every-2-days", icon: "📊" },
-    { label: "Semanal", value: "weekly", icon: "📰" }
+    { label: "Semanal", value: "weekly", icon: "📰" },
+    { label: "Personalizada", value: "custom", icon: "📊" }
   ];
 
   const handleSave = () => {
@@ -27,12 +27,39 @@ const Reminder = () => {
     localStorage.setItem('reminderEnabled', reminderEnabled.toString());
     localStorage.setItem('reminderTime', selectedTime);
     localStorage.setItem('reminderFrequency', frequency);
-    
+    if (frequency === 'custom') {
+      localStorage.setItem('reminderFrequencyCustomDays', String(customFrequencyDays));
+    }
+
+    const freqText = frequency === 'daily'
+      ? 'diariamente'
+      : frequency === 'every-2-days'
+      ? 'cada 2 días'
+      : frequency === 'weekly'
+      ? 'semanalmente'
+      : `cada ${customFrequencyDays} días`;
+
     toast({
       title: "Recordatorio configurado",
-      description: `Recibirás notificaciones ${frequency === 'daily' ? 'diariamente' : frequency === 'every-2-days' ? 'cada 2 días' : 'semanalmente'} a las ${selectedTime}`,
+      description: `Recibirás notificaciones ${freqText} a las ${selectedTime}`,
     });
   };
+
+  // Load saved settings on mount
+  useEffect(() => {
+    try {
+      const re = localStorage.getItem('reminderEnabled');
+      if (re !== null) setReminderEnabled(re === 'true');
+      const rt = localStorage.getItem('reminderTime');
+      if (rt) setSelectedTime(rt);
+      const rf = localStorage.getItem('reminderFrequency');
+      if (rf) setFrequency(rf);
+      const rfd = localStorage.getItem('reminderFrequencyCustomDays');
+      if (rfd) setCustomFrequencyDays(Number(rfd) || 3);
+    } catch (e) {
+      // ignore
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-muted pb-20">
@@ -78,22 +105,88 @@ const Reminder = () => {
                 <h3 className="font-semibold text-foreground">Hora del Recordatorio</h3>
               </div>
               
-              <div className="grid grid-cols-4 gap-3">
-                {timeOptions.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setSelectedTime(time)}
-                    className={`
-                      p-3 rounded-xl text-sm font-medium transition-all
-                      ${selectedTime === time
-                        ? 'bg-primary text-primary-foreground shadow-soft'
-                        : 'bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground'
-                      }
-                    `}
-                  >
-                    {time}
-                  </button>
-                ))}
+              <div className="flex flex-col items-center space-y-3">
+                <div className="flex items-center space-x-4 bg-muted p-3 rounded-2xl">
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => {
+                        const [h, m] = selectedTime.split(":").map(Number);
+                        const nh = (h + 1) % 24;
+                        setSelectedTime(`${String(nh).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+                      }}
+                      className="p-1 rounded-md bg-muted/60 hover:bg-muted/80"
+                      aria-label="Aumentar hora"
+                    >
+                      ▲
+                    </button>
+                    <div className="text-3xl font-mono w-14 text-center">{selectedTime.split(":")[0]}</div>
+                    <button
+                      onClick={() => {
+                        const [h, m] = selectedTime.split(":").map(Number);
+                        const nh = (h - 1 + 24) % 24;
+                        setSelectedTime(`${String(nh).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+                      }}
+                      className="p-1 rounded-md bg-muted/60 hover:bg-muted/80"
+                      aria-label="Disminuir hora"
+                    >
+                      ▼
+                    </button>
+                  </div>
+
+                  <div className="text-4xl font-mono font-semibold">:</div>
+
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => {
+                        const [h, m] = selectedTime.split(":").map(Number);
+                        const nm = (m + 5) % 60;
+                        setSelectedTime(`${String(h).padStart(2, "0")}:${String(nm).padStart(2, "0")}`);
+                      }}
+                      className="p-1 rounded-md bg-muted/60 hover:bg-muted/80"
+                      aria-label="Aumentar minutos"
+                    >
+                      ▲
+                    </button>
+                    <div className="text-3xl font-mono w-14 text-center">{selectedTime.split(":")[1]}</div>
+                    <button
+                      onClick={() => {
+                        const [h, m] = selectedTime.split(":").map(Number);
+                        const nm = (m - 5 + 60) % 60;
+                        setSelectedTime(`${String(h).padStart(2, "0")}:${String(nm).padStart(2, "0")}`);
+                      }}
+                      className="p-1 rounded-md bg-muted/60 hover:bg-muted/80"
+                      aria-label="Disminuir minutos"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+                <div className="w-full flex flex-col items-center">
+                  <div className="w-full flex items-center justify-between">
+                    <div className="text-xs text-muted-foreground">Toca los botones para ajustar hora/minutos</div>
+                    <button
+                      onClick={() => setShowNativeTimeInput(true)}
+                      className="text-xs text-primary underline flex items-center space-x-2"
+                      aria-label="Editar hora"
+                    >
+                      <span>✏️</span>
+                      <span>Editar</span>
+                    </button>
+                  </div>
+
+                  {showNativeTimeInput && (
+                    <div className="w-full pt-2">
+                      <input
+                        type="time"
+                        value={selectedTime}
+                        onChange={(e) => setSelectedTime(e.target.value)}
+                        className="w-full p-3 rounded-xl bg-muted text-foreground"
+                        autoFocus
+                        onBlur={() => setShowNativeTimeInput(false)}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </Card>
 
@@ -121,6 +214,19 @@ const Reminder = () => {
                     <span className="font-medium">{option.label}</span>
                   </button>
                 ))}
+
+                {frequency === 'custom' && (
+                  <div className="pt-2 space-y-2">
+                    <label className="text-sm text-muted-foreground">Repetir cada (días)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={customFrequencyDays}
+                      onChange={(e) => setCustomFrequencyDays(Math.max(1, Number(e.target.value || 1)))}
+                      className="w-full p-3 rounded-xl bg-muted text-foreground"
+                    />
+                  </div>
+                )}
               </div>
             </Card>
 
@@ -128,7 +234,7 @@ const Reminder = () => {
             <Card className="p-6 space-y-4">
               <h3 className="font-semibold text-foreground">Configuración Rápida</h3>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => {
                     setSelectedTime("09:00");
@@ -138,10 +244,23 @@ const Reminder = () => {
                 >
                   <div className="text-2xl">🌅</div>
                   <div className="text-sm font-medium text-foreground">
-                    Mañanas 9:00
+                    Mañana 9:00
                   </div>
                 </button>
-                
+
+                <button
+                  onClick={() => {
+                    setSelectedTime("13:00");
+                    setFrequency("daily");
+                  }}
+                  className="p-4 bg-mood-happy/10 hover:bg-mood-happy/20 rounded-xl text-center space-y-2 transition-colors"
+                >
+                  <div className="text-2xl">🍽️</div>
+                  <div className="text-sm font-medium text-foreground">
+                    Mediodía 13:00
+                  </div>
+                </button>
+
                 <button
                   onClick={() => {
                     setSelectedTime("20:00");
@@ -151,7 +270,7 @@ const Reminder = () => {
                 >
                   <div className="text-2xl">🌙</div>
                   <div className="text-sm font-medium text-foreground">
-                    Noches 8:00
+                    Noche 20:00
                   </div>
                 </button>
               </div>
