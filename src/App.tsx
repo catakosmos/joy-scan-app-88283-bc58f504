@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Onboarding from "./pages/Onboarding";
 import Home from "./pages/Home";
 import Exercises from "./pages/Exercises";
-import ExerciseDetail from "./pages/ExerciseDetail";
 import MoodStep from "./pages/checkin/MoodStep";
 import SleepStep from "./pages/checkin/SleepStep";
 import JournalStep from "./pages/checkin/JournalStep";
