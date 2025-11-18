@@ -2,6 +2,7 @@ import { Dumbbell, Calendar, Home, Clock, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
+
 interface BottomNavigationProps {
   todayCheckinCompleted?: boolean;
 }
@@ -23,14 +24,16 @@ export const BottomNavigation = ({ todayCheckinCompleted = false }: BottomNaviga
     {
       icon: Dumbbell,
       onClick: () => navigate("/exercises"),
-      isActive: location.pathname === "/exercises"
+      isActive: location.pathname === "/exercises",
+      label: "Ejercicios"
     },
     {
       icon: Calendar,
       onClick: handleCalendarClick,
       isActive: location.pathname.includes("/checkin"),
       showDayNumber: true,
-      dayNumber: today
+      dayNumber: today,
+      label: "Check-in"
     },
     {
       icon: Home,
@@ -41,12 +44,14 @@ export const BottomNavigation = ({ todayCheckinCompleted = false }: BottomNaviga
     {
       icon: Clock,
       onClick: () => navigate("/reminder"),
-      isActive: location.pathname === "/reminder"
+      isActive: location.pathname === "/reminder",
+      label: "Recordatorio"
     },
     {
       icon: User,
       onClick: () => navigate("/profile"),
-      isActive: location.pathname === "/profile"
+      isActive: location.pathname === "/profile",
+      label: "Perfil"
     }
   ];
 
@@ -76,6 +81,13 @@ export const BottomNavigation = ({ todayCheckinCompleted = false }: BottomNaviga
                   </div>
                 )}
               </div>
+
+              {/* mostrar label sólo si existe y no es el botón central */}
+              {!item.isCenter && item.label && (
+                <span className="mt-1 text-[11px] text-slate-600 dark:text-slate-300">
+                  {item.label}
+                </span>
+              )}
             </button>
           );
         })}
