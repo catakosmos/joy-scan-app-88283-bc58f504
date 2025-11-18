@@ -5,21 +5,33 @@ import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { Bell, Clock, Smartphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const Reminder = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [selectedTime, setSelectedTime] = useState("09:00");
   const [frequency, setFrequency] = useState("daily");
   const [customFrequencyDays, setCustomFrequencyDays] = useState(3);
-
+  const [selectedWeekday, setSelectedWeekday] = useState<string | null>(null);
   const [showNativeTimeInput, setShowNativeTimeInput] = useState(false);
-
 
   const frequencyOptions = [
     { label: "Diario", value: "daily", icon: "📅" },
     { label: "Semanal", value: "weekly", icon: "📰" },
     { label: "Personalizada", value: "custom", icon: "📊" }
+  ];
+
+  const weekdays = [
+    { key: "monday", label: "Lunes", short: "Lun" },
+    { key: "tuesday", label: "Martes", short: "Mar" },
+    { key: "wednesday", label: "Miércoles", short: "Mié" },
+    { key: "thursday", label: "Jueves", short: "Jue" },
+    { key: "friday", label: "Viernes", short: "Vie" },
+    { key: "saturday", label: "Sábado", short: "Sáb" },
+    { key: "sunday", label: "Domingo", short: "Dom" },
   ];
 
   const handleSave = () => {
@@ -29,6 +41,9 @@ const Reminder = () => {
     localStorage.setItem('reminderFrequency', frequency);
     if (frequency === 'custom') {
       localStorage.setItem('reminderFrequencyCustomDays', String(customFrequencyDays));
+    }
+    if (frequency === 'weekly' && selectedWeekday) {
+      localStorage.setItem('reminderWeekday', selectedWeekday);
     }
 
     const freqText = frequency === 'daily'
@@ -43,6 +58,11 @@ const Reminder = () => {
       title: "Recordatorio configurado",
       description: `Recibirás notificaciones ${freqText} a las ${selectedTime}`,
     });
+
+    // Navegar a home después de mostrar la notificación (pequeño delay)
+    setTimeout(() => {
+      navigate("/home");
+    }, 300);
   };
 
   // Load saved settings on mount
@@ -56,6 +76,8 @@ const Reminder = () => {
       if (rf) setFrequency(rf);
       const rfd = localStorage.getItem('reminderFrequencyCustomDays');
       if (rfd) setCustomFrequencyDays(Number(rfd) || 3);
+      const rw = localStorage.getItem('reminderWeekday');
+      if (rw) setSelectedWeekday(rw);
     } catch (e) {
       // ignore
     }
@@ -201,30 +223,94 @@ const Reminder = () => {
                 {frequencyOptions.map((option) => (
                   <button
                     key={option.value}
-                    onClick={() => setFrequency(option.value)}
-                    className={`
-                      w-full p-4 rounded-xl text-left transition-all flex items-center space-x-3
-                      ${frequency === option.value
-                        ? 'bg-primary/20 border-primary text-primary ring-2 ring-primary/50'
-                        : 'bg-muted hover:bg-muted/80 border-border'
+                    type="button"
+                    onClick={() => {
+                      setFrequency(option.value);
+                      if (option.value === "weekly" && !selectedWeekday) {
+                        const map = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+                        setSelectedWeekday(map[new Date().getDay()]);
                       }
-                    `}
+                    }}
+                    className={cn(
+                      "w-full flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors",
+                      frequency === option.value ? "bg-primary/10" : "bg-muted/10"
+                    )}
                   >
-                    <span className="text-2xl">{option.icon}</span>
-                    <span className="font-medium">{option.label}</span>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-lg">{option.icon}</span>
+                      <div className="text-left">
+                        <div className="font-medium">{option.label}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {option.value === "custom"
+                            ? "Elige cada cuántos días repetir"
+                            : option.value === "weekly"
+                            ? "Selecciona un día de la semana"
+                            : "Recibirás recordatorio diario"}
+                        </div>
+                      </div>
+                    </div>
+                    {frequency === option.value && <div className="text-sm font-semibold text-primary">✓</div>}
                   </button>
                 ))}
 
-                {frequency === 'custom' && (
-                  <div className="pt-2 space-y-2">
-                    <label className="text-sm text-muted-foreground">Repetir cada (días)</label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={customFrequencyDays}
-                      onChange={(e) => setCustomFrequencyDays(Math.max(1, Number(e.target.value || 1)))}
-                      className="w-full p-3 rounded-xl bg-muted text-foreground"
-                    />
+                {/* selector de día para frecuencia semanal */}
+                {frequency === "weekly" && (
+                  <div className="mt-3 grid grid-cols-7 gap-2">
+                    {weekdays.map((d) => (
+                      <button
+                        key={d.key}
+                        type="button"
+                        onClick={() => setSelectedWeekday(d.key)}
+                        className={cn(
+                          "py-2 px-1 rounded-lg text-xs text-center transition-colors",
+                          selectedWeekday === d.key
+                            ? "bg-primary text-primary-foreground font-semibold"
+                            : "bg-muted/20 hover:bg-muted/30"
+                        )}
+                        aria-pressed={selectedWeekday === d.key}
+                        title={d.label}
+                      >
+                        <div className="text-[11px]">{d.short}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* control para frecuencia personalizada */}
+                {frequency === "custom" && (
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="text-sm text-muted-foreground">Repetir cada</div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCustomFrequencyDays(d => Math.max(1, d - 1))}
+                        className="h-8 w-8 rounded-md bg-muted/20 hover:bg-muted flex items-center justify-center"
+                        aria-label="Disminuir días"
+                      >
+                        −
+                      </button>
+
+                      <input
+                        type="number"
+                        min={1}
+                        value={customFrequencyDays}
+                        onChange={(e) => setCustomFrequencyDays(Math.max(1, Number(e.target.value) || 1))}
+                        className="w-20 text-center rounded-md border border-border bg-background py-2 text-sm"
+                        aria-label="Días personalizados"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => setCustomFrequencyDays(d => d + 1)}
+                        className="h-8 w-8 rounded-md bg-muted/20 hover:bg-muted flex items-center justify-center"
+                        aria-label="Aumentar días"
+                      >
+                        +
+                      </button>
+                    </div>
+
+                    <div className="text-sm text-muted-foreground">día(s)</div>
                   </div>
                 )}
               </div>
@@ -284,7 +370,7 @@ const Reminder = () => {
           className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent/90 shadow-soft"
           size="lg"
         >
-          Guardar Configuración
+          Programar Recordatorio
         </Button>
       </div>
 
