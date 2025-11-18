@@ -364,14 +364,16 @@ const Reminder = () => {
           </>
         )}
 
-        {/* Save Button */}
-        <Button
-          onClick={handleSave}
-          className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent/90 shadow-soft"
-          size="lg"
-        >
-          Programar Recordatorio
-        </Button>
+        {/* Save Button - solo mostrar si reminderEnabled es true */}
+        {reminderEnabled && (
+          <Button
+            onClick={handleSave}
+            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary-hover hover:to-accent/90 shadow-soft"
+            size="lg"
+          >
+            Programar Recordatorio
+          </Button>
+        )}
       </div>
 
       <BottomNavigation />
