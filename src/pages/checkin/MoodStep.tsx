@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { ChevronRight, ChevronDown } from "lucide-react";
+import { BottomNavigation } from "@/components/BottomNavigation";
 
 const MoodStep = () => {
   const navigate = useNavigate();
@@ -184,6 +185,7 @@ const MoodStep = () => {
           <div className="w-8 h-2 bg-muted rounded-full"></div>
         </div>
       </div>
+      <BottomNavigation todayCheckinCompleted={false} />
     </div>
   );
 };
