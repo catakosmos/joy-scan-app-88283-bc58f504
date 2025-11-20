@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ChevronLeft, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { BottomNavigation } from "@/components/BottomNavigation";
 
 const JournalStep = () => {
   const navigate = useNavigate();
@@ -112,6 +113,7 @@ const JournalStep = () => {
           <div className="w-8 h-2 bg-primary rounded-full"></div>
         </div>
       </div>
+      <BottomNavigation todayCheckinCompleted={false} />
     </div>
   );
 };
