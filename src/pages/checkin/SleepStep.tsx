@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ChevronRight, ChevronLeft, Check } from "lucide-react";
+import { BottomNavigation } from "@/components/BottomNavigation";
 
 // Mapeo de valores del Slider (0-4) a categorías de sueño
 const sleepCategories = [
@@ -60,7 +61,7 @@ const SleepStep = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-muted">
-      <div className="max-w-md mx-auto p-6 space-y-8">
+      <div className="max-w-md mx-auto p-6 space-y-8 pb-32">
         
         {/* Header y Pregunta */}
         <div className="text-center space-y-6 pt-12">
@@ -74,79 +75,78 @@ const SleepStep = () => {
         </div>
 
         {/* --- CONTENEDOR PRINCIPAL: ALINEACIÓN VERTICAL --- */}
-        {/* Altura aumentada a 550px */}
         <div className="flex justify-center relative" style={{ height: `${containerHeight}px` }}>
-            
-            {/* Contenedor Flex para las 3 partes: Texto | Slider | Emoji */}
-            <div className="flex w-full max-w-sm h-full relative justify-between">
-
-                {/* 1. Columna de Etiquetas (Texto y Horas) */}
-                <div className="flex-1 h-full relative"> 
-                    {sleepCategories.map((cat, index) => (
-                        <div 
-                            key={cat.value}
-                            className="absolute text-right w-full pr-1"
-                            style={{ top: `${getTopPosition(index)}%`, transform: 'translateY(-50%)' }} 
-                        >
-                            <p className="text-lg font-semibold text-foreground leading-none">{cat.label}</p>
-                            <span className="text-sm font-normal text-muted-foreground">{cat.range}</span>
-                        </div>
-                    ))}
+          <div className="flex w-full max-w-sm h-full relative justify-between">
+            {/* 1. Columna de Etiquetas (Texto y Horas) */}
+            <div className="flex-1 h-full relative"> 
+              {sleepCategories.map((cat, index) => (
+                <div 
+                  key={cat.value}
+                  className="absolute text-right w-full pr-1"
+                  style={{ top: `${getTopPosition(index)}%`, transform: 'translateY(-50%)' }} 
+                >
+                  <p className="text-lg font-semibold text-foreground leading-none">{cat.label}</p>
+                  <span className="text-sm font-normal text-muted-foreground">{cat.range}</span>
                 </div>
-
-                {/* 2. Contenedor para el Slider Termómetro (CENTRO) */}
-                <div className="w-8 h-full relative mx-4"> 
-                    <Slider
-                        orientation="vertical"
-                        className="h-full" 
-                        defaultValue={[sleepCategories.length-1]} 
-                        max={sleepCategories.length - 1} 
-                        min={0} 
-                        step={1} 
-                        onValueChange={(value) => setSleepIndex(value[0])} 
-                        
-                    />
-                </div>
-
-                {/* 3. Columna de Emojis */}
-                <div className="flex-1 h-full relative text-left"> 
-                    {sleepCategories.map((cat, index) => (
-                        <span 
-                            key={cat.value}
-                            role="img" 
-                            className="text-3xl absolute"
-                            style={{ top: `${getTopPosition(index)}%`, transform: 'translateY(-50%)' }}
-                        >
-                            {cat.emoji}
-                        </span>
-                    ))}
-                </div>
-
-            </div>
+            ))}
           </div>
-          
-          {/* Valor Seleccionado y Estado */}
-          <div className="mt-8 text-center">
-            <h3 className="text-3xl font-extrabold text-primary">
-              {currentSleep.range}
-            </h3>
-            <p className="text-lg text-muted-foreground mt-2">
-              (Calidad: {currentSleep.label})
-            </p>
+
+          {/* 2. Contenedor para el Slider Termómetro (CENTRO) */}
+          <div className="w-8 h-full relative mx-4"> 
+            <Slider
+              orientation="vertical"
+              className="h-full" 
+              defaultValue={[sleepCategories.length-1]} 
+              max={sleepCategories.length - 1} 
+              min={0} 
+              step={1} 
+              onValueChange={(value) => setSleepIndex(value[0])} 
+            />
+          </div>
+
+          {/* 3. Columna de Emojis */}
+          <div className="flex-1 h-full relative text-left"> 
+            {sleepCategories.map((cat, index) => (
+              <span 
+                key={cat.value}
+                role="img" 
+                className="text-3xl absolute"
+                style={{ top: `${getTopPosition(index)}%`, transform: 'translateY(-50%)' }}
+              >
+                {cat.emoji}
+              </span>
+            ))}
           </div>
         </div>
+      </div>
+          
+      {/* Valor Seleccionado y Estado */}
+      <div className="mt-8 text-center">
+        <h3 className="text-3xl font-extrabold text-primary">
+          {currentSleep.range}
+        </h3>
+        <p className="text-lg text-muted-foreground mt-2">
+          (Calidad: {currentSleep.label})
+        </p>
+      </div>
+      
+      {/* Progress Indicator */}
+      <div className="flex gap-2 justify-center mt-8">
+        <div className="w-12 h-2 bg-primary rounded-full"></div>
+        <div className="w-12 h-2 bg-primary rounded-full"></div>
+        <div className="w-12 h-2 bg-muted rounded-full"></div>
+      </div>          
 
-        {/* Footer de navegación: centrar y limitar ancho igual que JournalStep */}
-        <div className="fixed bottom-6 left-0 right-0">
-          <div className="max-w-md mx-auto px-6">
-            <div className="flex space-x-4">
+      {/* Footer de navegación: centrar y limitar ancho igual que JournalStep */}
+      
+          <div className="flex space-x-4 pt-8">
               <Button
                 onClick={handleBack}
                 variant="outline"
                 className="flex-1 h-14 text-lg font-semibold"
                 size="lg"
               >
-                <ChevronLeft className="mr-2" size={20} />
+              <ChevronLeft className="mr-2" size={20} />
                 Atrás
               </Button>
 
@@ -155,14 +155,13 @@ const SleepStep = () => {
                 className="flex-1 h-14 text-lg font-semibold bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary-hover shadow-soft"
                 size="lg"
               >
-                <Check className="mr-2" size={20} />
+              <Check className="mr-2" size={20} />
                 Continuar
               </Button>
+              </div>
             </div>
-          </div>
-        </div>
+        <BottomNavigation todayCheckinCompleted={false} />     
       </div>
-    
   );
 };
 
