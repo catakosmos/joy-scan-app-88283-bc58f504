@@ -19,7 +19,7 @@ const mindfulnessSteps = [
   { text: "Fin del ejercicio. Mueve suavemente tus dedos de manos y pies. Cuando estés listo, abre los ojos lentamente y lleva esta atención al resto de tu día." }
 ];
 
-// 🆕 NUEVO: Placeholders específicos para la Gratitud
+// Placeholders específicos para la Gratitud
 const gratitudePlaceholders = [
     "Ej. Una persona a la que aprecies, o alguien que te ayudó hoy.", 
     "Ej. Una pequeña alegría del día, un logro o algo que salió bien.", 
@@ -134,7 +134,9 @@ const ExerciseDetail = () => {
       
       alert('¡Gratitud guardada con éxito! ✅');
 
+      // ✅ CAMBIO: Al guardar gratitud, también vamos al home
       handleStopExercise();
+      navigate('/home');
   };
 
   // --- Lógica del Temporizador (Mindfulness) ---
@@ -186,7 +188,7 @@ const ExerciseDetail = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-background via-secondary/20 to-muted">
         <Card className="p-6 max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold">No fund</h2>
+          <h2 className="text-2xl font-bold">No found</h2>
           <p className="text-sm text-muted-foreground mt-2">
             El ejercicio solicitado no está disponible.
           </p>
@@ -339,12 +341,21 @@ const ExerciseDetail = () => {
                 {buttonText}
                 </Button>
                 
-                {/* Botón de Terminar/Reiniciar (se mantiene la lógica anterior) */}
+                {/* Botón de Terminar/Reiniciar */}
                 {(isStarted || (!isStarted && currentStepIndex > 0)) && (isMindfulness || isBreathing) && (
                     <Button 
                         variant="ghost" 
                         className="w-full text-sm text-muted-foreground"
-                        onClick={handleStopExercise}
+                        onClick={() => {
+                            // ✅ CAMBIO: Si está corriendo, TERMINAR y navegar a HOME
+                            if (isStarted) {
+                                handleStopExercise();
+                                navigate('/home');
+                            } else {
+                                // Si está pausado o terminado (sin navegar), solo reiniciar
+                                handleStopExercise();
+                            }
+                        }}
                     >
                         {(isMindfulness && !isStarted) ? <RotateCcw size={16} className="mr-2" /> : null}
                         {isStarted ? "Terminar Ejercicio" : "Reiniciar Meditación"}
